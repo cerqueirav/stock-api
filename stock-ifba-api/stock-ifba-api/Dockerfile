@@ -10,16 +10,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["stock-api/stock-api.csproj", "stock-api/"]
-RUN dotnet restore "stock-api/stock-api.csproj"
+COPY ["stock-ifba-api/stock-ifba-api.csproj", "stock-ifba-api/"]
+RUN dotnet restore "stock-ifba-api/stock-ifba-api.csproj"
 COPY . .
-WORKDIR "/src/stock-api"
-RUN dotnet build "stock-api.csproj" -c Release -o /app/build
+WORKDIR "/src/stock-ifba-api"
+RUN dotnet build "stock-ifba-api.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "stock-api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "stock-ifba-api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "stock-api.dll"]
+ENTRYPOINT ["dotnet", "stock-ifba-api.dll"]
