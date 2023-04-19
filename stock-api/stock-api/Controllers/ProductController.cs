@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using stock_api.Models;
+using stock_api.RabbitMQ;
+using stock_api.Services;
 
 namespace stock_api.Controllers
 {
@@ -6,23 +9,41 @@ namespace stock_api.Controllers
     [Route("[controller]")]
     public class ProductController : ControllerBase
     {
-        private readonly ILogger<ProductController> _logger;
-
-        public ProductController(ILogger<ProductController> logger)
+        private readonly IProductService productService;
+        private readonly IRabitMQProducer _rabitMQProducer;
+        public ProductController(IProductService _productService, IRabitMQProducer rabitMQProducer)
         {
-            _logger = logger;
+            productService = _productService;
+            _rabitMQProducer = rabitMQProducer;
         }
-
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet("productlist")]
+        public IEnumerable<Product> ProductList()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            var productList = productService.GetProductList();
+            return productList;
+        }
+        [HttpGet("getproductbyid")]
+        public Product GetProductById(int Id)
+        {
+            return productService.GetProductById(Id);
+        }
+        [HttpPost("addproduct")]
+        public Product AddProduct(Product product)
+        {
+            var productData = productService.AddProduct(product);
+            //send the inserted product data to the queue and consumer will listening this data from queue
+            _rabitMQProducer.SendProductMessage(productData);
+            return productData;
+        }
+        [HttpPut("updateproduct")]
+        public Product UpdateProduct(Product product)
+        {
+            return productService.UpdateProduct(product);
+        }
+        [HttpDelete("deleteproduct")]
+        public bool DeleteProduct(int Id)
+        {
+            return productService.DeleteProduct(Id);
         }
     }
 }
