@@ -16,7 +16,7 @@ namespace stock_api.Controllers
             productService = _productService;
             _rabitMQProducer = rabitMQProducer;
         }
-        [HttpGet("productlist")]
+        [HttpGet("productlistteste")]
         public IEnumerable<Product> ProductList()
         {
             var productList = productService.GetProductList();
