@@ -16,18 +16,18 @@ namespace stock_api.Controllers
             productService = _productService;
             _rabitMQProducer = rabitMQProducer;
         }
-        [HttpGet("productlistteste")]
+        [HttpGet("Listar")]
         public IEnumerable<Product> ProductList()
         {
             var productList = productService.GetProductList();
             return productList;
         }
-        [HttpGet("getproductbyid")]
+        [HttpGet("ListarPorId")]
         public Product GetProductById(int Id)
         {
             return productService.GetProductById(Id);
         }
-        [HttpPost("addproduct")]
+        [HttpPost("Cadastrar")]
         public Product AddProduct(Product product)
         {
             var productData = productService.AddProduct(product);
@@ -35,12 +35,12 @@ namespace stock_api.Controllers
             _rabitMQProducer.SendProductMessage(productData);
             return productData;
         }
-        [HttpPut("updateproduct")]
+        [HttpPut("Atualizar")]
         public Product UpdateProduct(Product product)
         {
             return productService.UpdateProduct(product);
         }
-        [HttpDelete("deleteproduct")]
+        [HttpDelete("Deletar")]
         public bool DeleteProduct(int Id)
         {
             return productService.DeleteProduct(Id);

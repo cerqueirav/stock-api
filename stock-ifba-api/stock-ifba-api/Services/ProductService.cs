@@ -16,7 +16,7 @@ namespace stock_api.Services
         }
         public Product? GetProductById(int id)
         {
-            return _dbContext.Products.Where(x => x.ProductId == id).FirstOrDefault();
+            return _dbContext.Products.Where(x => x.Id == id).FirstOrDefault();
         }
         public Product AddProduct(Product product)
         {
@@ -32,7 +32,7 @@ namespace stock_api.Services
         }
         public bool DeleteProduct(int Id)
         {
-            var filteredData = _dbContext.Products.Where(x => x.ProductId == Id).FirstOrDefault();
+            var filteredData = _dbContext.Products.Where(x => x.Id == Id).FirstOrDefault();
             var result = _dbContext.Remove(filteredData);
             _dbContext.SaveChanges();
             return result != null ? true : false;
