@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Rewrite;
 using stock_api.Context;
 using stock_api.RabbitMQ;
 using stock_api.Services;
@@ -6,8 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddDbContext<ProductContext>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddDbContext<OrderContext>();
 builder.Services.AddScoped<IRabitMQProducer, RabitMQProducer>();
 
 builder.Services.AddControllers();
@@ -19,6 +20,10 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+var option = new RewriteOptions();
+option.AddRedirect("^$", "swagger");
+app.UseRewriter(option);
 
 app.UseHttpsRedirection();
 

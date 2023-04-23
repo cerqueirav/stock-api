@@ -3,10 +3,10 @@ using stock_api.Models;
 
 namespace stock_api.Context
 {
-    public class ProductContext : DbContext
+    public class OrderContext : DbContext
     {
         protected readonly IConfiguration Configuration;
-        public ProductContext(IConfiguration configuration)
+        public OrderContext(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -14,6 +14,6 @@ namespace stock_api.Context
         {
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
-        public DbSet<Product> Products { get; set;}
+        public DbSet<Order> Orders { get; set;}
     }
 }
