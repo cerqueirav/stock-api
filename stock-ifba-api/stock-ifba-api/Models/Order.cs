@@ -13,5 +13,6 @@ namespace stock_api.Models
         public int ClientId { get; set; }
         public DateTime CreationDate { get; set; }
         public int SellerId { get; set; }
+        public int StateId { get; set; }
     }
 }
