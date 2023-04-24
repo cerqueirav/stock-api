@@ -4,10 +4,10 @@ namespace stock_api.Services
 {
     public interface IOrderService
     {
-        public IEnumerable<Order> GetOrderList();
-        public Order? GetOrderById(int id);
-        public Order AddOrder(Order Order);
-        public Order UpdateOrder(Order Order);
-        public bool DeleteOrder(int Id);
+        public IEnumerable<Order> GetAll();
+        public Order? GetById(int id);
+        public Order Create(Order Order);
+        public Order Update(int id, Order Order);
+        public bool Delete(int id);
     }
 }

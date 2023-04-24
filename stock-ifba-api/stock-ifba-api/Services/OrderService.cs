@@ -10,32 +10,37 @@ namespace stock_api.Services
         {
             _dbContext = dbContext;
         }
-        public IEnumerable<Order> GetOrderList()
+
+        public IEnumerable<Order> GetAll()
         {
             return _dbContext.Orders.ToList();
         }
-        public Order? GetOrderById(int id)
+
+        public Order? GetById(int id)
         {
             return _dbContext.Orders.Where(x => x.Id == id).FirstOrDefault();
         }
-        public Order AddOrder(Order Order)
+
+        public Order Create(Order Order)
         {
             var result = _dbContext.Orders.Add(Order);
             _dbContext.SaveChanges();
             return result.Entity;
         }
-        public Order UpdateOrder(Order Order)
+        public Order Update(int id, Order Order)
         {
+            var order = _dbContext.Orders.Where(x => x.Id == id).FirstOrDefault();
             var result = _dbContext.Orders.Update(Order);
             _dbContext.SaveChanges();
             return result.Entity;
         }
-        public bool DeleteOrder(int Id)
+
+        public bool Delete(int id)
         {
-            var filteredData = _dbContext.Orders.Where(x => x.Id == Id).FirstOrDefault();
-            var result = _dbContext.Remove(filteredData);
+            var order = _dbContext.Orders.Where(x => x.Id == id).FirstOrDefault();
+            var result = _dbContext.Remove(order);
             _dbContext.SaveChanges();
-            return result != null ? true : false;
+            return (result is not null);
         }
     }
 }

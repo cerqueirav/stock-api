@@ -9,41 +9,95 @@ namespace stock_api.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderService OrderService;
+        private readonly IOrderService _orderService;
         private readonly IRabitMQProducer _rabitMQProducer;
-        public OrderController(IOrderService _OrderService, IRabitMQProducer rabitMQProducer)
+        public OrderController(IOrderService orderService, IRabitMQProducer rabitMQProducer)
         {
-            OrderService = _OrderService;
+            _orderService = orderService;
             _rabitMQProducer = rabitMQProducer;
         }
-        [HttpGet("Listar")]
-        public IEnumerable<Order> OrderList()
+
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            var OrderList = OrderService.GetOrderList();
-            return OrderList;
+            try
+            {
+                var orderList = _orderService.GetAll();
+
+                if (orderList is null)
+                    return NotFound("Nenhum pedido encontrado!");
+
+                return Ok(new { orders = orderList });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest("Ocorreu um erro ao realizar a consulta!" + ex);
+            }
         }
-        [HttpGet("ListarPorId")]
-        public Order GetOrderById(int Id)
+
+        [HttpGet("{id:int}")]
+        public IActionResult GetById(int id)
         {
-            return OrderService.GetOrderById(Id);
+            try
+            {
+                var order = _orderService.GetById(id);
+
+                if (order is null)
+                    return NotFound("O pedido não foi localizado!");
+
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Ocorreu um erro ao realizar a consulta!" + ex);
+            }
         }
-        [HttpPost("Cadastrar")]
-        public Order AddOrder(Order Order)
+
+        [HttpPost]
+        public IActionResult Create(Order Order)
         {
-            var OrderData = OrderService.AddOrder(Order);
-            //send the inserted Order data to the queue and consumer will listening this data from queue
-            _rabitMQProducer.SendOrderMessage(OrderData);
-            return OrderData;
+            try
+            {
+                var orderData = _orderService.Create(Order);
+
+                // Etapa de inserção na Fila do Rabbit MQ
+                _rabitMQProducer.SendOrderMessage(orderData);
+
+                return Ok(orderData);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest("Não foi possível cadastrar o pedido!" + ex);
+            } 
         }
-        [HttpPut("Atualizar")]
-        public Order UpdateOrder(Order Order)
+
+        [HttpPut("{id:int}")]
+        public IActionResult Update(int id, Order Order)
         {
-            return OrderService.UpdateOrder(Order);
+            try
+            {
+                var order = _orderService.Update(id, Order);
+
+                return Ok(order);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest("Não foi possível editar o pedido!" + ex);
+            }
         }
-        [HttpDelete("Deletar")]
-        public bool DeleteOrder(int Id)
+
+        [HttpDelete("{id:int}")]
+        public IActionResult Delete(int id)
         {
-            return OrderService.DeleteOrder(Id);
+            try{
+                var orderDeleted = _orderService.Delete(id);
+
+                return Ok(orderDeleted);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest("Não foi possível excluir o pedido!" + ex);
+            }
         }
     }
 }
