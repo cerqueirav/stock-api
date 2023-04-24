@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using stock_api.DTO;
 using stock_api.Models;
 using stock_api.RabbitMQ;
 using stock_api.Services;
@@ -54,11 +55,11 @@ namespace stock_api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Order Order)
+        public IActionResult Create(OrderDto orderDto)
         {
             try
             {
-                var orderData = _orderService.Create(Order);
+                var orderData = _orderService.Create(orderDto.Convert());
 
                 // Etapa de inserção na Fila do Rabbit MQ
                 _rabitMQProducer.SendOrderMessage(orderData);
