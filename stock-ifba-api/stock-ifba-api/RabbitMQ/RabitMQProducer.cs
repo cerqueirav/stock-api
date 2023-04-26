@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System.Text;
+using System.Threading.Channels;
 
 namespace stock_api.RabbitMQ
 {
@@ -15,7 +16,6 @@ namespace stock_api.RabbitMQ
 
         public void SendOrderMessage<T>(T message)
         {
-            //Here we specify the Rabbit MQ Server. we use rabbitmq docker image and use it
             var factory = new ConnectionFactory
             {
                 Uri = new Uri(_configuration.GetSection("ConnectionRabbit").GetSection("HostName").Value),
@@ -23,17 +23,20 @@ namespace stock_api.RabbitMQ
                 Password = (_configuration.GetSection("ConnectionRabbit").GetSection("Password").Value)
             };
 
-            //Create the RabbitMQ connection using connection factory details as i mentioned above
             var connection = factory.CreateConnection();
-            //Here we create channel with session and model
-            using
-            var channel = connection.CreateModel();
-            //declare the queue after mentioning name and a few property related to that
-            channel.QueueDeclare("Order", exclusive: false);
-            //Serialize the message
+ 
+            using var channel = connection.CreateModel();
+            
+            channel.QueueDeclare(
+               queue: "Order",
+               durable: false,
+               exclusive: false,
+               autoDelete: false,
+               arguments: null);
+
             var json = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(json);
-            //put the data on to the Order queue
+
             channel.BasicPublish(exchange: "", routingKey: "Order", body: body);
         }
     }

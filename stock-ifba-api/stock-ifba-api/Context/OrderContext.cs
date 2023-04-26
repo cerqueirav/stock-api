@@ -15,5 +15,6 @@ namespace stock_api.Context
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
         public DbSet<Order> Orders { get; set;}
+        public DbSet<OrderConfirmed> OrdersConfirmed { get; set; }
     }
 }

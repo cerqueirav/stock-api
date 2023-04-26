@@ -40,7 +40,7 @@ namespace stock_api.Services
             var order = _dbContext.Orders.Where(x => x.Id == id).FirstOrDefault();
             var result = _dbContext.Remove(order);
             _dbContext.SaveChanges();
-            return (result is not null);
+            return result is not null;
         }
     }
 }
